@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function CandidateRegister() {
+    const navigate = useNavigate();
     const [form, setForm] = useState({
         name: "",
         age: "",
@@ -140,6 +142,19 @@ function CandidateRegister() {
                         <button className="btn btn-primary px-5">Register</button>
                     </div>
                 </form>
+
+                <div className="text-center mt-4">
+                    <p className="text-muted">
+                        Already have an account? 
+                        <button 
+                            type="button"
+                            onClick={() => navigate("/login")}
+                            className="btn btn-link text-primary fw-semibold p-0 ms-1"
+                        >
+                            Sign in here
+                        </button>
+                    </p>
+                </div>
             </div>
         </div>
     );
