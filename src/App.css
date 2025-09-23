@@ -1,0 +1,7 @@
+/* Make placeholder text smaller and lighter */
+::placeholder {
+    font-size: 0.85rem;
+    /* smaller text */
+    color: #6c757d;
+    /* Bootstrap muted color */
+}
