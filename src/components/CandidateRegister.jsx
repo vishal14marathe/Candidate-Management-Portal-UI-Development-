@@ -12,7 +12,9 @@ function CandidateRegister() {
         mobile: "",
         qualification: "",
         location: "",
-        occupationStatus: ""
+        occupationStatus: "",
+        resume: null,
+        idProof: null,
     });
     const [message, setMessage] = useState("");
 
@@ -21,32 +23,51 @@ function CandidateRegister() {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
+    // handle file upload
+    const handleFileChange = (e) => {
+        setForm({ ...form, [e.target.name]: e.target.files[0] });
+    };
+
     // handle form submit
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Simple validation
+        // Basic email validation
         if (!form.email.includes("@")) {
             setMessage("Invalid email format");
             return;
         }
-        if (form.age < 18 || form.age > 60) {
-            setMessage("Age must be between 18 and 60");
-            return;
-        }
 
         try {
-            const res = await axios.post("/api/candidates/register", form);
-            setMessage(res.data.message); // show success from API
+            // Use FormData for file + text data
+            const formData = new FormData();
+            Object.keys(form).forEach((key) => {
+                formData.append(key, form[key]);
+            });
+
+            const res = await axios.post("/api/candidates/register", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            setMessage(res.data.message || "Registration successful!");
         } catch (err) {
-            setMessage("Registration failed!");
+            if (err.response?.data?.message) {
+                setMessage(err.response.data.message);
+            } else {
+                setMessage("Registration failed! Please try again.");
+            }
         }
     };
 
     return (
-        <div className="container mt-5">
-            <div className="card shadow p-4">
-                <h2 className="mb-4 text-center">Candidate Registration</h2>
+        <div className="container mt-3">
+            <div className="card shadow p-3">
+                <h2 className="mb-4 text-center fw-bold text-primary">
+                    Candidate Registration
+                </h2>
+
                 {message && <div className="alert alert-info">{message}</div>}
 
                 <form onSubmit={handleSubmit} className="row g-3">
@@ -56,6 +77,7 @@ function CandidateRegister() {
                             type="text"
                             name="name"
                             className="form-control"
+                            placeholder="Enter your name"
                             required
                             onChange={handleChange}
                         />
@@ -67,6 +89,7 @@ function CandidateRegister() {
                             type="number"
                             name="age"
                             className="form-control"
+                            placeholder="Enter your age"
                             required
                             onChange={handleChange}
                         />
@@ -78,6 +101,7 @@ function CandidateRegister() {
                             type="email"
                             name="email"
                             className="form-control"
+                            placeholder="Enter your email"
                             required
                             onChange={handleChange}
                         />
@@ -89,6 +113,7 @@ function CandidateRegister() {
                             type="password"
                             name="password"
                             className="form-control"
+                            placeholder="Create password"
                             required
                             onChange={handleChange}
                         />
@@ -100,6 +125,7 @@ function CandidateRegister() {
                             type="text"
                             name="mobile"
                             className="form-control"
+                            placeholder="Enter mobile number"
                             required
                             onChange={handleChange}
                         />
@@ -111,6 +137,7 @@ function CandidateRegister() {
                             type="text"
                             name="qualification"
                             className="form-control"
+                            placeholder="Graduate, Postgraduate"
                             onChange={handleChange}
                         />
                     </div>
@@ -121,6 +148,7 @@ function CandidateRegister() {
                             type="text"
                             name="location"
                             className="form-control"
+                            placeholder="Enter your location"
                             onChange={handleChange}
                         />
                     </div>
@@ -132,10 +160,34 @@ function CandidateRegister() {
                             className="form-select"
                             onChange={handleChange}
                         >
-                            <option value="">Select</option>
+                            <option value="">Select occupation status</option>
                             <option value="Available">Available</option>
                             <option value="Not Available">Not Available</option>
                         </select>
+                    </div>
+
+                    <div className="col-md-6">
+                        <label className="form-label">Resume (PDF/DOC)</label>
+                        <input
+                            type="file"
+                            name="resume"
+                            className="form-control"
+                            accept=".pdf,.doc,.docx"
+                            required
+                            onChange={handleFileChange}
+                        />
+                    </div>
+
+                    <div className="col-md-6">
+                        <label className="form-label">ID Proof (PDF/JPG/PNG)</label>
+                        <input
+                            type="file"
+                            name="idProof"
+                            className="form-control"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            required
+                            onChange={handleFileChange}
+                        />
                     </div>
 
                     <div className="col-12 text-center">
@@ -145,8 +197,8 @@ function CandidateRegister() {
 
                 <div className="text-center mt-4">
                     <p className="text-muted">
-                        Already have an account? 
-                        <button 
+                        Already have an account?
+                        <button
                             type="button"
                             onClick={() => navigate("/login")}
                             className="btn btn-link text-primary fw-semibold p-0 ms-1"
