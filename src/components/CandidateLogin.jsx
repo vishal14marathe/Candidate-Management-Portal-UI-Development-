@@ -3,9 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function CandidateLogin() {
-
     const navigate = useNavigate();
-    
+
     const [form, setForm] = useState({
         email: "",
         password: ""
@@ -40,13 +39,14 @@ function CandidateLogin() {
         try {
             const res = await axios.post("/api/login", {
                 email: form.email,
-                password: form.password
+                password: form.password,
             });
 
-            // Store the token in localStorage
             if (res.data.token) {
+                // Store token & role in localStorage
                 localStorage.setItem("authToken", res.data.token);
                 localStorage.setItem("userRole", res.data.role);
+
                 setMessage("Login successful! Redirecting to profile...");
 
                 // Navigate to profile page after 2 seconds
@@ -55,9 +55,9 @@ function CandidateLogin() {
                 }, 2000);
             }
         } catch (err) {
-            if (err.response && err.response.status === 401) {
+            if (err.response?.status === 401) {
                 setMessage("Invalid email or password. Please try again.");
-            } else if (err.response && err.response.data && err.response.data.message) {
+            } else if (err.response?.data?.message) {
                 setMessage(err.response.data.message);
             } else {
                 setMessage("Login failed! Please try again.");
@@ -74,17 +74,24 @@ function CandidateLogin() {
                     <div className="card shadow-lg">
                         <div className="card-body p-5">
                             <div className="text-center mb-4">
-                                <h2 className="fw-bold text-primary ">Candidate Login</h2>
+                                <h2 className="fw-bold text-primary">Candidate Login</h2>
                                 <p className="text-muted">Sign in to access your profile</p>
                             </div>
 
                             {message && (
-                                <div className={`alert ${message.includes("successful") ? "alert-success" : "alert-danger"} text-center`}>
+                                <div
+                                    className={`alert ${
+                                        message.includes("successful")
+                                            ? "alert-success"
+                                            : "alert-danger"
+                                    } text-center`}
+                                >
                                     {message}
                                 </div>
                             )}
 
                             <form onSubmit={handleSubmit}>
+                                {/* Email Input */}
                                 <div className="mb-3">
                                     <label htmlFor="email" className="form-label fw-semibold">
                                         <i className="bi bi-envelope me-2"></i>Email Address
@@ -102,6 +109,7 @@ function CandidateLogin() {
                                     />
                                 </div>
 
+                                {/* Password Input */}
                                 <div className="mb-4">
                                     <label htmlFor="password" className="form-label fw-semibold">
                                         <i className="bi bi-lock me-2"></i>Password
@@ -120,6 +128,7 @@ function CandidateLogin() {
                                     />
                                 </div>
 
+                                {/* Submit Button */}
                                 <div className="d-grid">
                                     <button
                                         type="submit"
@@ -128,7 +137,11 @@ function CandidateLogin() {
                                     >
                                         {isLoading ? (
                                             <>
-                                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                                <span
+                                                    className="spinner-border spinner-border-sm me-2"
+                                                    role="status"
+                                                    aria-hidden="true"
+                                                ></span>
                                                 Signing In...
                                             </>
                                         ) : (
@@ -141,6 +154,7 @@ function CandidateLogin() {
                                 </div>
                             </form>
 
+                            {/* Register Link */}
                             <div className="text-center mt-4">
                                 <p className="text-muted">
                                     Don't have an account?
@@ -154,13 +168,17 @@ function CandidateLogin() {
                                 </p>
                             </div>
 
+                            {/* Forgot Password */}
                             <div className="text-center mt-3">
                                 <small className="text-muted">
                                     <button
                                         type="button"
                                         onClick={() => navigate("/forgot-password")}
                                         className="btn btn-link text-muted p-0"
-                                        style={{ fontSize: 'inherit', textDecoration: 'none' }}
+                                        style={{
+                                            fontSize: "inherit",
+                                            textDecoration: "none",
+                                        }}
                                     >
                                         Forgot your password?
                                     </button>

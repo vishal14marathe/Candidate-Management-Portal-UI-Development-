@@ -32,29 +32,45 @@ function CandidateRegister() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Form validation
+        // Basic email validation
         if (!form.email.includes("@")) {
             setMessage("Invalid email format");
             return;
         }
 
         try {
-            const res = await axios.post("/api/candidates/register", form);
-            setMessage(res.data.message); // show success from API
+            // Use FormData for file + text data
+            const formData = new FormData();
+            Object.keys(form).forEach((key) => {
+                formData.append(key, form[key]);
+            });
+
+            const res = await axios.post("/api/candidates/register", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            setMessage(res.data.message || "Registration successful!");
         } catch (err) {
-            setMessage("Registration failed! ", err);
+            if (err.response?.data?.message) {
+                setMessage(err.response.data.message);
+            } else {
+                setMessage("Registration failed! Please try again.");
+            }
         }
     };
-
 
     return (
         <div className="container mt-3">
             <div className="card shadow p-3">
-                <h2 className="mb-4 text-center fw-bold text-primary">Candidate Registration</h2>
+                <h2 className="mb-4 text-center fw-bold text-primary">
+                    Candidate Registration
+                </h2>
+
                 {message && <div className="alert alert-info">{message}</div>}
 
                 <form onSubmit={handleSubmit} className="row g-3">
-
                     <div className="col-md-6">
                         <label className="form-label">Name</label>
                         <input
@@ -149,6 +165,7 @@ function CandidateRegister() {
                             <option value="Not Available">Not Available</option>
                         </select>
                     </div>
+
                     <div className="col-md-6">
                         <label className="form-label">Resume (PDF/DOC)</label>
                         <input
@@ -173,11 +190,9 @@ function CandidateRegister() {
                         />
                     </div>
 
-
                     <div className="col-12 text-center">
                         <button className="btn btn-primary px-5">Register</button>
                     </div>
-
                 </form>
 
                 <div className="text-center mt-4">
