@@ -125,7 +125,7 @@ function CandidateLogin() {
                                     Don't have an account?
                                     <button
                                         type="button"
-                                        onClick={() => navigate("/cadidate/register")}
+                                        onClick={() => navigate("/candidate/register")}
                                         className="btn btn-link text-primary fw-semibold p-0 ms-1"
                                     >
                                         Register here
