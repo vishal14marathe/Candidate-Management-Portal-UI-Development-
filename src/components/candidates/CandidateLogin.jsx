@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 function CandidateLogin() {
     const navigate = useNavigate();
@@ -12,18 +11,15 @@ function CandidateLogin() {
     const [message, setMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
-    // handle input change
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    // handle form submit
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         setIsLoading(true);
         setMessage("");
 
-        // Simple validation
         if (!form.email.includes("@")) {
             setMessage("Invalid email format");
             setIsLoading(false);
@@ -36,35 +32,23 @@ function CandidateLogin() {
             return;
         }
 
-        try {
-            const res = await axios.post("/api/login", {
-                email: form.email,
-                password: form.password,
-            });
+        const storedUser = JSON.parse(sessionStorage.getItem("registeredUser"));
 
-            if (res.data.token) {
-                // Store token & role in localStorage
-                localStorage.setItem("authToken", res.data.token);
-                localStorage.setItem("userRole", res.data.role);
+        if (storedUser && storedUser.email === form.email && storedUser.password === form.password) {
 
-                setMessage("Login successful! Redirecting to profile...");
+            setMessage("Login successful! Redirecting...");
 
-                // Navigate to profile page after 2 seconds
-                setTimeout(() => {
-                    navigate("/profile");
-                }, 2000);
-            }
-        } catch (err) {
-            if (err.response?.status === 401) {
-                setMessage("Invalid email or password. Please try again.");
-            } else if (err.response?.data?.message) {
-                setMessage(err.response.data.message);
-            } else {
-                setMessage("Login failed! Please try again.");
-            }
-        } finally {
-            setIsLoading(false);
+            sessionStorage.setItem("isLoggedIn", "true");
+
+            setTimeout(() => {
+                navigate("/candidate/profile");
+            }, 1500);
+
+        } else {
+            setMessage("Invalid email or password. Please try again.");
         }
+
+        setIsLoading(false);
     };
 
     return (
@@ -80,21 +64,19 @@ function CandidateLogin() {
 
                             {message && (
                                 <div
-                                    className={`alert ${
-                                        message.includes("successful")
-                                            ? "alert-success"
-                                            : "alert-danger"
-                                    } text-center`}
+                                    className={`alert ${message.includes("successful")
+                                        ? "alert-success"
+                                        : "alert-danger"
+                                        } text-center`}
                                 >
                                     {message}
                                 </div>
                             )}
 
                             <form onSubmit={handleSubmit}>
-                                {/* Email Input */}
                                 <div className="mb-3">
                                     <label htmlFor="email" className="form-label fw-semibold">
-                                        <i className="bi bi-envelope me-2"></i>Email Address
+                                        Email Address
                                     </label>
                                     <input
                                         type="email"
@@ -109,10 +91,9 @@ function CandidateLogin() {
                                     />
                                 </div>
 
-                                {/* Password Input */}
                                 <div className="mb-4">
                                     <label htmlFor="password" className="form-label fw-semibold">
-                                        <i className="bi bi-lock me-2"></i>Password
+                                        Password
                                     </label>
                                     <input
                                         type="password"
@@ -128,61 +109,28 @@ function CandidateLogin() {
                                     />
                                 </div>
 
-                                {/* Submit Button */}
                                 <div className="d-grid">
                                     <button
                                         type="submit"
                                         className="btn btn-primary btn-lg"
                                         disabled={isLoading}
                                     >
-                                        {isLoading ? (
-                                            <>
-                                                <span
-                                                    className="spinner-border spinner-border-sm me-2"
-                                                    role="status"
-                                                    aria-hidden="true"
-                                                ></span>
-                                                Signing In...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <i className="bi bi-box-arrow-in-right me-2"></i>
-                                                Sign In
-                                            </>
-                                        )}
+                                        {isLoading ? "Signing In..." : "Sign In"}
                                     </button>
                                 </div>
                             </form>
 
-                            {/* Register Link */}
                             <div className="text-center mt-4">
                                 <p className="text-muted">
                                     Don't have an account?
                                     <button
                                         type="button"
-                                        onClick={() => navigate("/register")}
+                                        onClick={() => navigate("/cadidate/register")}
                                         className="btn btn-link text-primary fw-semibold p-0 ms-1"
                                     >
                                         Register here
                                     </button>
                                 </p>
-                            </div>
-
-                            {/* Forgot Password */}
-                            <div className="text-center mt-3">
-                                <small className="text-muted">
-                                    <button
-                                        type="button"
-                                        onClick={() => navigate("/forgot-password")}
-                                        className="btn btn-link text-muted p-0"
-                                        style={{
-                                            fontSize: "inherit",
-                                            textDecoration: "none",
-                                        }}
-                                    >
-                                        Forgot your password?
-                                    </button>
-                                </small>
                             </div>
                         </div>
                     </div>
