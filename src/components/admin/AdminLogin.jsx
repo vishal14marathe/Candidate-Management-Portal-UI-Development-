@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-hot-toast';
 
 const AdminLogin = () => {
     const navigate = useNavigate();
@@ -12,11 +13,12 @@ const AdminLogin = () => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        if (!sessionStorage.getItem("email")) {
-            sessionStorage.setItem("email", "admin@example.com");
+        // Set default admin credentials in localStorage (not sessionStorage)
+        if (!localStorage.getItem("adminEmail")) {
+            localStorage.setItem("adminEmail", "admin@example.com");
         }
-        if (!sessionStorage.getItem("password")) {
-            sessionStorage.setItem("password", "adminPass");
+        if (!localStorage.getItem("adminPassword")) {
+            localStorage.setItem("adminPassword", "adminPass");
         }
     }, []);
 
@@ -29,14 +31,31 @@ const AdminLogin = () => {
         setError("");
         setLoading(true);
 
-        const storedEmail = sessionStorage.getItem("email");
-        const storedPassword = sessionStorage.getItem("password");
+        const storedEmail = localStorage.getItem("adminEmail");
+        const storedPassword = localStorage.getItem("adminPassword");
 
         if (form.email === storedEmail && form.password === storedPassword) {
+            // Create admin user object and store in localStorage
+            const adminUser = {
+                id: 1,
+                email: form.email,
+                name: 'Admin User',
+                role: 'ADMIN',
+                token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+                loginTime: new Date().toISOString()
+            };
 
-            navigate("/admin/dashboard");
+            // Store in localStorage (same as AdminDashboard expects)
+            localStorage.setItem("adminUser", JSON.stringify(adminUser));
+
+            toast.success("Login successful! Redirecting to dashboard...");
+
+            setTimeout(() => {
+                navigate("/admin/dashboard");
+            }, 1000);
         } else {
-            setError(" Invalid email or password");
+            setError("Invalid email or password");
+            toast.error("Invalid credentials");
         }
 
         setLoading(false);
@@ -53,8 +72,6 @@ const AdminLogin = () => {
                     </div>
                 )}
 
-
-
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">
                         <label className="form-label">Email</label>
@@ -65,6 +82,8 @@ const AdminLogin = () => {
                             onChange={handleChange}
                             className="form-control"
                             required
+                            autoComplete="email"
+                            placeholder="admin@example.com"
                         />
                     </div>
 
@@ -77,6 +96,8 @@ const AdminLogin = () => {
                             onChange={handleChange}
                             className="form-control"
                             required
+                            autoComplete="current-password"
+                            placeholder="Enter password"
                         />
                     </div>
 
@@ -85,9 +106,22 @@ const AdminLogin = () => {
                         className="btn btn-primary w-100"
                         disabled={loading}
                     >
-                        {loading ? "Checking..." : "Login"}
+                        {loading ? (
+                            <>
+                                <span className="spinner-border spinner-border-sm me-2"></span>
+                                Checking...
+                            </>
+                        ) : (
+                            "Login"
+                        )}
                     </button>
                 </form>
+
+                <div className="text-center mt-3">
+                    <small className="text-muted">
+                        Demo: admin@example.com / adminPass
+                    </small>
+                </div>
             </div>
         </div>
     );
