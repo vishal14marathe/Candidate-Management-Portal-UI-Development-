@@ -183,470 +183,401 @@ function CandidateProfile() {
     const idProofInfo = getFileInfo(candidateData.idProof);
 
     return (
-        <div className="min-vh-100" style={{ backgroundColor: '#f8f9fa' }}>
-            <style jsx>{`
-                .info-card {
-                    background: white;
-                    border-radius: 12px;
-                    padding: 1.5rem;
-                    border: 1px solid #e9ecef;
-                    transition: all 0.3s ease;
-                }
+        <div className="d-flex min-vh-100" style={{ backgroundColor: '#f8f9fa' }}>
+            {/* Sidebar Navigation */}
+            <div className="sidebar" style={{ 
+                width: '280px', 
+                backgroundColor: '#ffffff',
+                boxShadow: '2px 0 10px rgba(0,0,0,0.1)',
+                position: 'fixed',
+                height: '100vh',
+                overflowY: 'auto'
+            }}>
+                <div className="p-4 border-bottom">
+                    <h5 className="text-primary fw-bold mb-0">Candidate Portal</h5>
+                </div>
                 
-                .info-card:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                    border-color: #dee2e6;
-                }
+                <nav className="p-3">
+                    <ul className="nav flex-column">
+                        <li className="nav-item mb-2">
+                            <a className="nav-link active d-flex align-items-center p-3 rounded" 
+                               style={{ backgroundColor: '#e3f2fd', color: '#1976d2' }}>
+                                <i className="bi bi-grid me-3" style={{ fontSize: '1.2rem' }}></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li className="nav-item mb-2">
+                            <a className="nav-link d-flex align-items-center p-3 rounded text-muted">
+                                <i className="bi bi-person me-3" style={{ fontSize: '1.2rem' }}></i>
+                                Profile
+                            </a>
+                        </li>
+                        <li className="nav-item mb-2">
+                            <a className="nav-link d-flex align-items-center p-3 rounded text-muted">
+                                <i className="bi bi-file-earmark-text me-3" style={{ fontSize: '1.2rem' }}></i>
+                                Applications
+                            </a>
+                        </li>
+                        <li className="nav-item mb-2">
+                            <a className="nav-link d-flex align-items-center p-3 rounded text-muted">
+                                <i className="bi bi-gear me-3" style={{ fontSize: '1.2rem' }}></i>
+                                Settings
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
                 
-                .update-card {
-                    background: white;
-                    border-radius: 15px;
-                    padding: 1.5rem;
-                    border: 2px solid #e9ecef;
-                    transition: all 0.3s ease;
-                }
-                
-                .update-card:hover {
-                    border-color: #667eea;
-                    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
-                }
-                
-                .completion-card {
-                    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-                    border-radius: 15px;
-                    padding: 2rem;
-                    border: 1px solid #dee2e6;
-                }
-                
-                .completion-item {
-                    padding: 1rem;
-                    border-radius: 10px;
-                    background: white;
-                    transition: all 0.3s ease;
-                }
-                
-                .completion-item:hover {
-                    transform: translateY(-3px);
-                    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-                }
-                
-                .icon-wrapper {
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 50%;
-                    background: rgba(102, 126, 234, 0.1);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 1.2rem;
-                }
-                
-                .status-display .badge {
-                    font-size: 0.9rem;
-                    padding: 0.5rem 1rem;
-                    border-radius: 20px;
-                }
-                
-                .btn:hover {
-                    transform: translateY(-1px);
-                    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-                }
-            `}</style>
-            <div className="container py-5">
+                <div className="mt-auto p-3 border-top">
+                    <button
+                        className="btn btn-outline-danger w-100"
+                        onClick={handleLogout}
+                    >
+                        <i className="bi bi-box-arrow-right me-2"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="main-content" style={{ marginLeft: '280px', width: 'calc(100% - 280px)' }}>
                 {/* Header */}
-                <div className="row mb-4">
-                    <div className="col-12">
-                        <div className="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h2 className="text-dark fw-bold mb-1">Candidate Profile</h2>
-                                <p className="text-muted mb-0">Manage your profile information</p>
+                <div className="bg-white border-bottom p-4">
+                    <div className="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 className="fw-bold text-dark mb-1">Welcome, {candidateData.name?.split(' ')[0] || 'Candidate'}</h3>
+                            <p className="text-muted mb-0">Tue, {new Date().toLocaleDateString('en-US', { 
+                                weekday: 'short', 
+                                day: '2-digit', 
+                                month: 'long', 
+                                year: 'numeric' 
+                            })}</p>
+                        </div>
+                        <div className="d-flex align-items-center">
+                            <div className="search-box me-3">
+                                <div className="input-group">
+                                    <span className="input-group-text bg-light border-0">
+                                        <i className="bi bi-search text-muted"></i>
+                                    </span>
+                                    <input type="text" className="form-control border-0 bg-light" placeholder="Search" />
+                                </div>
                             </div>
-                            <button
-                                className="btn btn-outline-danger"
-                                onClick={handleLogout}
-                            >
-                                <i className="bi bi-box-arrow-right me-2"></i>
-                                Logout
-                            </button>
+                            <div className="notification-icon me-3">
+                                <i className="bi bi-bell text-muted" style={{ fontSize: '1.2rem' }}></i>
+                            </div>
+                            <div className="profile-avatar">
+                                <div className="rounded-circle bg-primary d-flex align-items-center justify-content-center"
+                                     style={{ width: '40px', height: '40px' }}>
+                                    <span className="text-white fw-bold">
+                                        {candidateData.name ? 
+                                            candidateData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) 
+                                            : 'NA'
+                                        }
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Message Alert */}
                 {message && (
-                    <div className={`alert ${message.includes("success") ? "alert-success" : message.includes("selected") ? "alert-info" : "alert-danger"} alert-dismissible fade show`}>
-                        {message}
-                        <button
-                            type="button"
-                            className="btn-close"
-                            onClick={() => setMessage("")}
-                        ></button>
+                    <div className="p-4">
+                        <div className={`alert ${message.includes("success") ? "alert-success" : message.includes("selected") ? "alert-info" : "alert-danger"} alert-dismissible fade show`}>
+                            {message}
+                            <button
+                                type="button"
+                                className="btn-close"
+                                onClick={() => setMessage("")}
+                            ></button>
+                        </div>
                     </div>
                 )}
 
-                {/* Main Profile Card */}
-                <div className="row justify-content-center">
-                    <div className="col-lg-8">
-                        <div className="card shadow-lg border-0" style={{ borderRadius: '20px' }}>
-                            <div className="card-body p-0">
-                                {/* Header Section with Avatar */}
-                                <div className="bg-gradient text-white text-center p-4" style={{ 
-                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
-                                    borderRadius: '20px 20px 0 0' 
-                                }}>
-                                    <div className="position-relative d-inline-block mb-3">
-                                        <div className="bg-white rounded-circle d-flex align-items-center justify-content-center mx-auto shadow" 
-                                             style={{ width: '100px', height: '100px' }}>
-                                            <span className="text-primary fw-bold" style={{ fontSize: '2.5rem' }}>
-                                                {candidateData.name ? 
-                                                    candidateData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) 
-                                                    : 'NA'
-                                                }
-                                            </span>
-                                        </div>
-                                        <div className="position-absolute bottom-0 end-0 bg-success rounded-circle" 
-                                             style={{ width: '25px', height: '25px' }}>
-                                            <i className="bi bi-check text-white" style={{ fontSize: '0.8rem', marginLeft: '6px', marginTop: '3px' }}></i>
-                                        </div>
-                                    </div>
-                                    <h3 className="fw-bold mb-1">{candidateData.name || "Not Set"}</h3>
-                                    <p className="mb-0 opacity-75">{candidateData.email || "No email"}</p>
-                                </div>
-
-                                {/* Profile Content */}
-                                <div className="p-5">
-                                    {/* Personal Information Grid */}
-                                    <div className="row g-4 mb-5">
-                                        <div className="col-md-6">
-                                            <div className="info-card h-100">
-                                                <div className="d-flex align-items-center mb-2">
-                                                    <div className="icon-wrapper me-3">
-                                                        <i className="bi bi-person text-primary"></i>
-                                                    </div>
-                                                    <div>
-                                                        <small className="text-muted">Full Name</small>
-                                                        <div className="fw-semibold">{candidateData.name || "Not Available"}</div>
-                                                    </div>
+                {/* Profile Content */}
+                <div className="p-4">
+                    <div className="row">
+                        <div className="col-lg-8">
+                            <div className="card border-0 shadow-sm">
+                                <div className="card-body p-4">
+                                    {/* Profile Header */}
+                                    <div className="d-flex align-items-center justify-content-between mb-4">
+                                        <div className="d-flex align-items-center">
+                                            <div className="profile-image me-3">
+                                                <div className="rounded-circle bg-gradient d-flex align-items-center justify-content-center"
+                                                     style={{ 
+                                                         width: '80px', 
+                                                         height: '80px',
+                                                         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                                                     }}>
+                                                    <span className="text-white fw-bold" style={{ fontSize: '2rem' }}>
+                                                        {candidateData.name ? 
+                                                            candidateData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) 
+                                                            : 'NA'
+                                                        }
+                                                    </span>
                                                 </div>
                                             </div>
-                                        </div>
-                                        
-                                        <div className="col-md-6">
-                                            <div className="info-card h-100">
-                                                <div className="d-flex align-items-center mb-2">
-                                                    <div className="icon-wrapper me-3">
-                                                        <i className="bi bi-calendar text-primary"></i>
-                                                    </div>
-                                                    <div>
-                                                        <small className="text-muted">Age</small>
-                                                        <div className="fw-semibold">{candidateData.age || "Not Available"}</div>
-                                                    </div>
-                                                </div>
+                                            <div>
+                                                <h4 className="fw-bold mb-1">{candidateData.name || "Candidate Name"}</h4>
+                                                <p className="text-muted mb-0">{candidateData.email || "email@example.com"}</p>
                                             </div>
                                         </div>
-                                        
-                                        <div className="col-md-6">
-                                            <div className="info-card h-100">
-                                                <div className="d-flex align-items-center mb-2">
-                                                    <div className="icon-wrapper me-3">
-                                                        <i className="bi bi-envelope text-primary"></i>
-                                                    </div>
-                                                    <div>
-                                                        <small className="text-muted">Email Address</small>
-                                                        <div className="fw-semibold">{candidateData.email || "Not Available"}</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="col-md-6">
-                                            <div className="info-card h-100">
-                                                <div className="d-flex align-items-center mb-2">
-                                                    <div className="icon-wrapper me-3">
-                                                        <i className="bi bi-phone text-primary"></i>
-                                                    </div>
-                                                    <div>
-                                                        <small className="text-muted">Mobile Number</small>
-                                                        <div className="fw-semibold">{candidateData.mobile || "Not Available"}</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="col-md-6">
-                                            <div className="info-card h-100">
-                                                <div className="d-flex align-items-center mb-2">
-                                                    <div className="icon-wrapper me-3">
-                                                        <i className="bi bi-mortarboard text-primary"></i>
-                                                    </div>
-                                                    <div>
-                                                        <small className="text-muted">Qualification</small>
-                                                        <div className="fw-semibold">{candidateData.qualification || "Not Available"}</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="col-md-6">
-                                            <div className="info-card h-100">
-                                                <div className="d-flex align-items-center mb-2">
-                                                    <div className="icon-wrapper me-3">
-                                                        <i className="bi bi-geo-alt text-primary"></i>
-                                                    </div>
-                                                    <div>
-                                                        <small className="text-muted">Location</small>
-                                                        <div className="fw-semibold">{candidateData.location || "Not Available"}</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <button
+                                            className="btn btn-primary"
+                                            onClick={() => setIsEditing(!isEditing)}
+                                        >
+                                            <i className="bi bi-pencil me-2"></i>
+                                            {isEditing ? 'Cancel' : 'Edit'}
+                                        </button>
                                     </div>
 
-                                    {/* Work Status & Documents Section */}
-                                    <div className="row g-4">
-                                        {/* Work Status */}
-                                        <div className="col-12">
-                                            <div className="update-card">
-                                                <div className="d-flex align-items-center justify-content-between mb-3">
-                                                    <div className="d-flex align-items-center">
-                                                        <div className="icon-wrapper me-3">
-                                                            <i className="bi bi-briefcase text-success"></i>
-                                                        </div>
-                                                        <div>
-                                                            <h6 className="mb-0 fw-bold">Work Status</h6>
-                                                            <small className="text-muted">Your current availability</small>
-                                                        </div>
-                                                    </div>
-                                                    {!isEditing && (
-                                                        <button
-                                                            className="btn btn-outline-primary btn-sm"
-                                                            onClick={() => setIsEditing(true)}
-                                                        >
-                                                            <i className="bi bi-pencil me-1"></i>
-                                                            Update
-                                                        </button>
-                                                    )}
-                                                </div>
-                                                
-                                                {isEditing ? (
-                                                    <div className="d-flex gap-2 align-items-center">
-                                                        <select
-                                                            name="occupationStatus"
-                                                            className="form-select"
-                                                            value={candidateData.occupationStatus || ""}
-                                                            onChange={handleInputChange}
-                                                        >
-                                                            <option value="">Select Work Status</option>
-                                                            <option value="Available">Available for Work</option>
-                                                            <option value="Not Available">Not Available</option>
-                                                            <option value="Currently Employed">Currently Employed</option>
-                                                            <option value="Freelancing">Freelancing</option>
-                                                        </select>
-                                                        <button
-                                                            className="btn btn-success btn-sm"
-                                                            onClick={handleSaveProfile}
-                                                            disabled={isLoading}
-                                                        >
-                                                            {isLoading ? (
-                                                                <span className="spinner-border spinner-border-sm"></span>
-                                                            ) : (
-                                                                <i className="bi bi-check"></i>
-                                                            )}
-                                                        </button>
-                                                        <button
-                                                            className="btn btn-secondary btn-sm"
-                                                            onClick={() => setIsEditing(false)}
-                                                            disabled={isLoading}
-                                                        >
-                                                            <i className="bi bi-x"></i>
-                                                        </button>
-                                                    </div>
-                                                ) : (
-                                                    <div className="status-display">
-                                                        <span className={`badge ${candidateData.occupationStatus === 'Available' ? 'bg-success' : 
-                                                                       candidateData.occupationStatus === 'Currently Employed' ? 'bg-info' :
-                                                                       candidateData.occupationStatus === 'Freelancing' ? 'bg-warning' : 'bg-secondary'}`}>
-                                                            {candidateData.occupationStatus || "Status not set"}
-                                                        </span>
-                                                    </div>
-                                                )}
+                                    <form onSubmit={handleSaveProfile}>
+                                        <div className="row g-4">
+                                            {/* Full Name */}
+                                            <div className="col-md-6">
+                                                <label className="form-label fw-semibold text-muted">Full Name</label>
+                                                <input
+                                                    type="text"
+                                                    name="name"
+                                                    className="form-control form-control-lg bg-light border-0"
+                                                    placeholder="Your First Name"
+                                                    value={candidateData.name || ""}
+                                                    onChange={handleInputChange}
+                                                    disabled={!isEditing}
+                                                    style={{ backgroundColor: '#f8f9fa !important' }}
+                                                />
                                             </div>
-                                        </div>
 
-                                        {/* Documents Section */}
-                                        <div className="col-md-6">
-                                            <div className="update-card h-100">
-                                                <div className="d-flex align-items-center justify-content-between mb-3">
-                                                    <div className="d-flex align-items-center">
-                                                        <div className="icon-wrapper me-3">
-                                                            <i className="bi bi-file-earmark-text text-info"></i>
-                                                        </div>
-                                                        <div>
-                                                            <h6 className="mb-0 fw-bold">Resume</h6>
-                                                            <small className="text-muted">Upload your CV</small>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                
+                                            {/* Age */}
+                                            <div className="col-md-6">
+                                                <label className="form-label fw-semibold text-muted">Age</label>
+                                                <input
+                                                    type="number"
+                                                    name="age"
+                                                    className="form-control form-control-lg bg-light border-0"
+                                                    placeholder="Your Age"
+                                                    value={candidateData.age || ""}
+                                                    onChange={handleInputChange}
+                                                    disabled={!isEditing}
+                                                    min="18"
+                                                    max="65"
+                                                />
+                                            </div>
+
+                                            {/* Email (Non-editable) */}
+                                            <div className="col-md-6">
+                                                <label className="form-label fw-semibold text-muted">Email Address</label>
+                                                <input
+                                                    type="email"
+                                                    className="form-control form-control-lg bg-light border-0"
+                                                    value={candidateData.email || ""}
+                                                    disabled
+                                                    style={{ backgroundColor: '#e9ecef !important' }}
+                                                />
+                                            </div>
+
+                                            {/* Mobile */}
+                                            <div className="col-md-6">
+                                                <label className="form-label fw-semibold text-muted">Mobile</label>
+                                                <input
+                                                    type="text"
+                                                    name="mobile"
+                                                    className="form-control form-control-lg bg-light border-0"
+                                                    placeholder="Your Mobile Number"
+                                                    value={candidateData.mobile || ""}
+                                                    onChange={handleInputChange}
+                                                    disabled={!isEditing}
+                                                />
+                                            </div>
+
+                                            {/* Qualification */}
+                                            <div className="col-md-6">
+                                                <label className="form-label fw-semibold text-muted">Qualification</label>
+                                                <select
+                                                    name="qualification"
+                                                    className="form-select form-select-lg bg-light border-0"
+                                                    value={candidateData.qualification || ""}
+                                                    onChange={handleInputChange}
+                                                    disabled={!isEditing}
+                                                >
+                                                    <option value="">Select Qualification</option>
+                                                    <option value="High School">High School</option>
+                                                    <option value="Graduate">Graduate</option>
+                                                    <option value="Post Graduate">Post Graduate</option>
+                                                    <option value="PhD">PhD</option>
+                                                    <option value="Diploma">Diploma</option>
+                                                    <option value="Certificate">Certificate</option>
+                                                </select>
+                                            </div>
+
+                                            {/* Location */}
+                                            <div className="col-md-6">
+                                                <label className="form-label fw-semibold text-muted">Location</label>
+                                                <select
+                                                    name="location"
+                                                    className="form-select form-select-lg bg-light border-0"
+                                                    value={candidateData.location || ""}
+                                                    onChange={handleInputChange}
+                                                    disabled={!isEditing}
+                                                >
+                                                    <option value="">Select Location</option>
+                                                    <option value="Mumbai">Mumbai</option>
+                                                    <option value="Delhi">Delhi</option>
+                                                    <option value="Bangalore">Bangalore</option>
+                                                    <option value="Chennai">Chennai</option>
+                                                    <option value="Hyderabad">Hyderabad</option>
+                                                    <option value="Pune">Pune</option>
+                                                    <option value="Kolkata">Kolkata</option>
+                                                    <option value="Ahmedabad">Ahmedabad</option>
+                                                </select>
+                                            </div>
+
+                                            {/* Occupation Status */}
+                                            <div className="col-md-6">
+                                                <label className="form-label fw-semibold text-muted">Occupation Status</label>
+                                                <select
+                                                    name="occupationStatus"
+                                                    className="form-select form-select-lg bg-light border-0"
+                                                    value={candidateData.occupationStatus || ""}
+                                                    onChange={handleInputChange}
+                                                    disabled={!isEditing}
+                                                >
+                                                    <option value="">Select Status</option>
+                                                    <option value="Working">Working</option>
+                                                    <option value="Looking for Job">Looking for Job</option>
+                                                    <option value="Fresher">Fresher</option>
+                                                    <option value="Student">Student</option>
+                                                    <option value="Freelancer">Freelancer</option>
+                                                </select>
+                                            </div>
+
+                                            {/* Resume Upload */}
+                                            <div className="col-md-6">
+                                                <label className="form-label fw-semibold text-muted">Resume</label>
                                                 {isEditing ? (
-                                                    <div>
-                                                        <input
-                                                            type="file"
-                                                            name="resume"
-                                                            className="form-control"
-                                                            onChange={handleFileChange}
-                                                            accept=".pdf,.doc,.docx"
-                                                        />
-                                                        <small className="text-muted">PDF, DOC, DOCX (Max 5MB)</small>
-                                                    </div>
+                                                    <input
+                                                        type="file"
+                                                        name="resume"
+                                                        className="form-control form-control-lg bg-light border-0"
+                                                        onChange={handleFileChange}
+                                                        accept=".pdf,.doc,.docx"
+                                                    />
                                                 ) : (
-                                                    <div>
+                                                    <div className="bg-light p-3 rounded">
                                                         {resumeInfo ? (
                                                             <div className="d-flex align-items-center justify-content-between">
                                                                 <div>
-                                                                    <span className="badge bg-success mb-1">
-                                                                        <i className="bi bi-check-circle me-1"></i>
-                                                                        Uploaded
-                                                                    </span>
-                                                                    <div>
-                                                                        <small className="text-muted">
-                                                                            {formatFileSize(resumeInfo.size)} • {resumeInfo.type?.split('/')[1] || 'file'}
-                                                                        </small>
+                                                                    <span className="badge bg-success mb-1">Uploaded</span>
+                                                                    <div className="small text-muted">
+                                                                        {formatFileSize(resumeInfo.size)} • {resumeInfo.type?.split('/')[1]}
                                                                     </div>
                                                                 </div>
                                                                 <button
-                                                                    className="btn btn-outline-primary btn-sm"
+                                                                    type="button"
+                                                                    className="btn btn-sm btn-outline-primary"
                                                                     onClick={() => handleDownloadFile(candidateData.resume, 'resume')}
                                                                 >
                                                                     <i className="bi bi-download"></i>
                                                                 </button>
                                                             </div>
                                                         ) : (
-                                                            <div className="text-center py-3">
-                                                                <i className="bi bi-cloud-upload text-muted" style={{ fontSize: '2rem' }}></i>
-                                                                <div className="text-muted mt-2">No resume uploaded</div>
-                                                                <button
-                                                                    className="btn btn-outline-primary btn-sm mt-2"
-                                                                    onClick={() => setIsEditing(true)}
-                                                                >
-                                                                    Upload Resume
-                                                                </button>
+                                                            <div className="text-muted text-center py-2">
+                                                                <i className="bi bi-file-earmark-text"></i> No resume uploaded
                                                             </div>
                                                         )}
                                                     </div>
                                                 )}
                                             </div>
-                                        </div>
 
-                                        <div className="col-md-6">
-                                            <div className="update-card h-100">
-                                                <div className="d-flex align-items-center justify-content-between mb-3">
-                                                    <div className="d-flex align-items-center">
-                                                        <div className="icon-wrapper me-3">
-                                                            <i className="bi bi-file-earmark-image text-warning"></i>
-                                                        </div>
-                                                        <div>
-                                                            <h6 className="mb-0 fw-bold">ID Proof</h6>
-                                                            <small className="text-muted">Identity verification</small>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                
+                                            {/* ID Proof Upload */}
+                                            <div className="col-md-6">
+                                                <label className="form-label fw-semibold text-muted">ID Proof</label>
                                                 {isEditing ? (
-                                                    <div>
-                                                        <input
-                                                            type="file"
-                                                            name="idProof"
-                                                            className="form-control"
-                                                            onChange={handleFileChange}
-                                                            accept=".pdf,.jpg,.jpeg,.png"
-                                                        />
-                                                        <small className="text-muted">PDF, JPG, PNG (Max 5MB)</small>
-                                                    </div>
+                                                    <input
+                                                        type="file"
+                                                        name="idProof"
+                                                        className="form-control form-control-lg bg-light border-0"
+                                                        onChange={handleFileChange}
+                                                        accept=".pdf,.jpg,.jpeg,.png"
+                                                    />
                                                 ) : (
-                                                    <div>
+                                                    <div className="bg-light p-3 rounded">
                                                         {idProofInfo ? (
                                                             <div className="d-flex align-items-center justify-content-between">
                                                                 <div>
-                                                                    <span className="badge bg-success mb-1">
-                                                                        <i className="bi bi-check-circle me-1"></i>
-                                                                        Uploaded
-                                                                    </span>
-                                                                    <div>
-                                                                        <small className="text-muted">
-                                                                            {formatFileSize(idProofInfo.size)} • {idProofInfo.type?.split('/')[1] || 'file'}
-                                                                        </small>
+                                                                    <span className="badge bg-success mb-1">Uploaded</span>
+                                                                    <div className="small text-muted">
+                                                                        {formatFileSize(idProofInfo.size)} • {idProofInfo.type?.split('/')[1]}
                                                                     </div>
                                                                 </div>
                                                                 <button
-                                                                    className="btn btn-outline-primary btn-sm"
+                                                                    type="button"
+                                                                    className="btn btn-sm btn-outline-primary"
                                                                     onClick={() => handleDownloadFile(candidateData.idProof, 'id-proof')}
                                                                 >
                                                                     <i className="bi bi-download"></i>
                                                                 </button>
                                                             </div>
                                                         ) : (
-                                                            <div className="text-center py-3">
-                                                                <i className="bi bi-cloud-upload text-muted" style={{ fontSize: '2rem' }}></i>
-                                                                <div className="text-muted mt-2">No ID proof uploaded</div>
-                                                                <button
-                                                                    className="btn btn-outline-primary btn-sm mt-2"
-                                                                    onClick={() => setIsEditing(true)}
-                                                                >
-                                                                    Upload ID Proof
-                                                                </button>
+                                                            <div className="text-muted text-center py-2">
+                                                                <i className="bi bi-file-earmark-image"></i> No ID proof uploaded
                                                             </div>
                                                         )}
                                                     </div>
                                                 )}
                                             </div>
                                         </div>
-                                    </div>
 
-                                    {/* Profile Completion Stats */}
-                                    <div className="row mt-5">
-                                        <div className="col-12">
-                                            <div className="completion-card">
-                                                <h6 className="fw-bold mb-3 text-center">Profile Completion</h6>
-                                                <div className="row text-center g-3">
-                                                    <div className="col-4">
-                                                        <div className="completion-item">
-                                                            <i className="bi bi-person-check text-success" style={{ fontSize: '2rem' }}></i>
-                                                            <div className="mt-2">
-                                                                <strong>Personal Info</strong>
-                                                                <div className="text-success small">Complete</div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-4">
-                                                        <div className="completion-item">
-                                                            <i className={`bi bi-file-earmark-text ${resumeInfo ? 'text-success' : 'text-muted'}`} 
-                                                               style={{ fontSize: '2rem' }}></i>
-                                                            <div className="mt-2">
-                                                                <strong>Resume</strong>
-                                                                <div className={`small ${resumeInfo ? 'text-success' : 'text-muted'}`}>
-                                                                    {resumeInfo ? 'Uploaded' : 'Pending'}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-4">
-                                                        <div className="completion-item">
-                                                            <i className={`bi bi-file-earmark-image ${idProofInfo ? 'text-success' : 'text-muted'}`} 
-                                                               style={{ fontSize: '2rem' }}></i>
-                                                            <div className="mt-2">
-                                                                <strong>ID Proof</strong>
-                                                                <div className={`small ${idProofInfo ? 'text-success' : 'text-muted'}`}>
-                                                                    {idProofInfo ? 'Uploaded' : 'Pending'}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                        {/* Save Button */}
+                                        {isEditing && (
+                                            <div className="row mt-4">
+                                                <div className="col-12">
+                                                    <button
+                                                        type="submit"
+                                                        className="btn btn-primary btn-lg px-4"
+                                                        disabled={isLoading}
+                                                    >
+                                                        {isLoading ? (
+                                                            <>
+                                                                <span className="spinner-border spinner-border-sm me-2"></span>
+                                                                Updating...
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <i className="bi bi-check-circle me-2"></i>
+                                                                Save Changes
+                                                            </>
+                                                        )}
+                                                    </button>
                                                 </div>
                                             </div>
+                                        )}
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* My Email Address Section */}
+                        <div className="col-lg-4">
+                            <div className="card border-0 shadow-sm">
+                                <div className="card-body p-4">
+                                    <h6 className="fw-bold mb-3">My Email Address</h6>
+                                    <div className="d-flex align-items-center p-3 bg-light rounded mb-3">
+                                        <div className="me-3">
+                                            <div className="rounded-circle bg-primary d-flex align-items-center justify-content-center"
+                                                 style={{ width: '40px', height: '40px' }}>
+                                                <i className="bi bi-envelope text-white"></i>
+                                            </div>
+                                        </div>
+                                        <div className="flex-grow-1">
+                                            <div className="fw-semibold">{candidateData.email || "email@example.com"}</div>
+                                            <small className="text-muted">Primary email</small>
                                         </div>
                                     </div>
+                                    <button className="btn btn-outline-primary w-100">
+                                        <i className="bi bi-plus-circle me-2"></i>
+                                        Add Email Address
+                                    </button>
                                 </div>
                             </div>
                         </div>
