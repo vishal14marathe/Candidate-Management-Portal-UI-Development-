@@ -438,9 +438,113 @@ const AdminDashboard = () => {
                 </div>
             </div>
 
+            {/* Filters Card */}
+            <div className="card shadow mb-4">
+                <div className="card-header bg-light">
+                    <h5 className="card-title mb-0">
+                        <i className="bi bi-funnel me-2"></i>
+                        Filters
+                    </h5>
+                </div>
+                <div className="card-body">
+                    <div className="row g-3">
+                        {/* Name Search with Debounce */}
+                        <div className="col-md-3">
+                            <label className="form-label fw-semibold">Search by Name</label>
+                            <input
+                                type="text"
+                                name="name"
+                                className="form-control"
+                                placeholder="Enter candidate name..."
+                                value={searchInput}
+                                onChange={handleSearchChange}
+                                disabled={loading}
+                            />
+                        </div>
 
-            {/* filter code here only  */}
+                        {/* Qualification Filter */}
+                        <div className="col-md-2">
+                            <label className="form-label fw-semibold">Qualification</label>
+                            <select
+                                name="qualification"
+                                className="form-select"
+                                value={filters.qualification}
+                                onChange={handleFilterChange}
+                                disabled={loading}
+                            >
+                                <option value="">All Qualifications</option>
+                                {filterOptions.qualifications.map(qual => (
+                                    <option key={qual} value={qual}>{qual}</option>
+                                ))}
+                            </select>
+                        </div>
 
+                        {/* Location Filter */}
+                        <div className="col-md-2">
+                            <label className="form-label fw-semibold">Location</label>
+                            <select
+                                name="location"
+                                className="form-select"
+                                value={filters.location}
+                                onChange={handleFilterChange}
+                                disabled={loading}
+                            >
+                                <option value="">All Locations</option>
+                                {filterOptions.locations.map(location => (
+                                    <option key={location} value={location}>{location}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Status Filter */}
+                        <div className="col-md-2">
+                            <label className="form-label fw-semibold">Status</label>
+                            <select
+                                name="occupationStatus"
+                                className="form-select"
+                                value={filters.occupationStatus}
+                                onChange={handleFilterChange}
+                                disabled={loading}
+                            >
+                                <option value="">All Status</option>
+                                {filterOptions.occupationStatuses.map(status => (
+                                    <option key={status} value={status}>{status}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Age Filter */}
+                        <div className="col-md-2">
+                            <label className="form-label fw-semibold">Age</label>
+                            <select
+                                name="age"
+                                className="form-select"
+                                value={filters.age}
+                                onChange={handleFilterChange}
+                                disabled={loading}
+                            >
+                                <option value="">All Ages</option>
+                                {filterOptions.ages.map(age => (
+                                    <option key={age} value={age}>{age}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Clear Filters Button */}
+                        <div className="col-md-1 d-flex align-items-end">
+                            <button
+                                className="btn btn-outline-secondary w-100"
+                                onClick={clearFilters}
+                                disabled={loading}
+                                title="Clear all filters"
+                            >
+                                <i className="bi bi-arrow-clockwise"></i>
+                                <span className="d-none d-lg-inline ms-1">Clear</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {/* Candidates Table */}
             <div className="card shadow">
