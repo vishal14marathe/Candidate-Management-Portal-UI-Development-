@@ -14,6 +14,8 @@ const AdminDashboard = () => {
         name: ""
     });
     const [searchInput, setSearchInput] = useState(""); // Separate state for search input
+    const [filteredCandidates, setFilteredCandidates] = useState([]); // State for filtered results
+    const [allCandidates, setAllCandidates] = useState([]); // State for all candidates
     const [pagination, setPagination] = useState({
         currentPage: 1,
         totalPages: 1,
@@ -27,7 +29,7 @@ const AdminDashboard = () => {
         ages: []
     });
 
-    // Debounce function to delay search
+    // Improved debounce function
     const useDebounce = (value, delay) => {
         const [debouncedValue, setDebouncedValue] = useState(value);
 
@@ -44,9 +46,9 @@ const AdminDashboard = () => {
         return debouncedValue;
     };
 
-    const debouncedSearch = useDebounce(searchInput, 500); // 500ms delay
+    const debouncedSearchTerm = useDebounce(searchInput, 300); // Reduced delay for better UX
 
-    // Check admin authentication
+    // Check admin authentication and load initial data
     useEffect(() => {
         const adminUser = JSON.parse(localStorage.getItem("adminUser"));
         console.log("Admin User from localStorage:", adminUser);
@@ -59,26 +61,93 @@ const AdminDashboard = () => {
         }
 
         console.log("Admin authentication successful!");
-        loadCandidates();
-        loadFilterOptions();
+        loadInitialData();
     }, [navigate]);
 
-    // Load candidates when filters or debounced search changes
+    // Apply filters and search when any filter changes or search term changes
     useEffect(() => {
-        const adminUser = JSON.parse(localStorage.getItem("adminUser"));
-        if (adminUser && adminUser.role === "ADMIN") {
-            loadCandidates();
-        }
-    }, [filters, debouncedSearch, pagination.currentPage]);
+        applyFiltersAndSearch();
+    }, [filters, debouncedSearchTerm, allCandidates]);
 
-    // Update filters when debounced search changes
-    useEffect(() => {
-        setFilters(prev => ({
+    // Load initial data
+    const loadInitialData = async () => {
+        setLoading(true);
+        try {
+            await new Promise(resolve => setTimeout(resolve, 300));
+            const candidates = getAllRegisteredCandidates();
+            const candidateData = candidates.length > 0 ? candidates : getMockCandidates();
+            
+            setAllCandidates(candidateData);
+            loadFilterOptions(candidateData);
+            
+        } catch (error) {
+            toast.error("Failed to load candidates");
+            console.error("Error loading candidates:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Apply filters and search
+    const applyFiltersAndSearch = () => {
+        let filtered = [...allCandidates];
+
+        // Apply search filter
+        if (debouncedSearchTerm.trim()) {
+            filtered = filtered.filter(candidate =>
+                candidate.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+            );
+        }
+
+        // Apply other filters
+        if (filters.qualification) {
+            filtered = filtered.filter(candidate =>
+                candidate.qualification === filters.qualification
+            );
+        }
+        if (filters.location) {
+            filtered = filtered.filter(candidate =>
+                candidate.location === filters.location
+            );
+        }
+        if (filters.occupationStatus) {
+            filtered = filtered.filter(candidate =>
+                candidate.occupationStatus === filters.occupationStatus
+            );
+        }
+        if (filters.age) {
+            filtered = filtered.filter(candidate =>
+                candidate.age === parseInt(filters.age)
+            );
+        }
+
+        setFilteredCandidates(filtered);
+        
+        // Update pagination
+        const totalPages = Math.ceil(filtered.length / pagination.pageSize);
+        setPagination(prev => ({
             ...prev,
-            name: debouncedSearch
+            totalPages,
+            totalElements: filtered.length,
+            currentPage: 1 // Reset to first page when filters change
         }));
-        setPagination(prev => ({ ...prev, currentPage: 1 }));
-    }, [debouncedSearch]);
+
+        // Set candidates for current page
+        const startIndex = 0; // Always start from first page when filters change
+        const endIndex = pagination.pageSize;
+        const paginatedCandidates = filtered.slice(startIndex, endIndex);
+        setCandidates(paginatedCandidates);
+    };
+
+    // Handle pagination separately
+    useEffect(() => {
+        if (filteredCandidates.length > 0) {
+            const startIndex = (pagination.currentPage - 1) * pagination.pageSize;
+            const endIndex = startIndex + pagination.pageSize;
+            const paginatedCandidates = filteredCandidates.slice(startIndex, endIndex);
+            setCandidates(paginatedCandidates);
+        }
+    }, [pagination.currentPage, filteredCandidates, pagination.pageSize]);
 
     // Function to get all registered candidates from sessionStorage
     const getAllRegisteredCandidates = () => {
@@ -148,77 +217,15 @@ const AdminDashboard = () => {
         ];
     };
 
-    const loadCandidates = async () => {
-        setLoading(true);
+    const loadFilterOptions = (candidateData) => {
         try {
-            // Simulate API delay
-            await new Promise(resolve => setTimeout(resolve, 300));
-
-            // Get candidates from sessionStorage (real data)
-            const registeredCandidates = getAllRegisteredCandidates();
-
-            // If no registered candidates found, use mock data
-            let allCandidates = registeredCandidates.length > 0 ? registeredCandidates : getMockCandidates();
-
-            // Apply filters
-            let filteredCandidates = [...allCandidates];
-
-            if (filters.qualification) {
-                filteredCandidates = filteredCandidates.filter(candidate =>
-                    candidate.qualification === filters.qualification
-                );
-            }
-            if (filters.location) {
-                filteredCandidates = filteredCandidates.filter(candidate =>
-                    candidate.location === filters.location
-                );
-            }
-            if (filters.occupationStatus) {
-                filteredCandidates = filteredCandidates.filter(candidate =>
-                    candidate.occupationStatus === filters.occupationStatus
-                );
-            }
-            if (filters.age) {
-                filteredCandidates = filteredCandidates.filter(candidate =>
-                    candidate.age === parseInt(filters.age)
-                );
-            }
-            if (filters.name) {
-                filteredCandidates = filteredCandidates.filter(candidate =>
-                    candidate.name.toLowerCase().includes(filters.name.toLowerCase())
-                );
-            }
-
-            // Calculate pagination
-            const startIndex = (pagination.currentPage - 1) * pagination.pageSize;
-            const endIndex = startIndex + pagination.pageSize;
-            const paginatedCandidates = filteredCandidates.slice(startIndex, endIndex);
-
-            setCandidates(paginatedCandidates);
-            setPagination(prev => ({
-                ...prev,
-                totalPages: Math.ceil(filteredCandidates.length / pagination.pageSize),
-                totalElements: filteredCandidates.length
-            }));
-
-        } catch (error) {
-            toast.error("Failed to load candidates");
-            console.error("Error loading candidates:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const loadFilterOptions = () => {
-        try {
-            const allCandidates = getAllRegisteredCandidates().length > 0 ?
-                getAllRegisteredCandidates() : getMockCandidates();
-
+            const candidates = candidateData || allCandidates;
+            
             setFilterOptions({
-                qualifications: [...new Set(allCandidates.map(c => c.qualification))],
-                locations: [...new Set(allCandidates.map(c => c.location))],
-                occupationStatuses: [...new Set(allCandidates.map(c => c.occupationStatus))],
-                ages: [...new Set(allCandidates.map(c => c.age))].sort((a, b) => a - b)
+                qualifications: [...new Set(candidates.map(c => c.qualification).filter(q => q && q !== "N/A"))],
+                locations: [...new Set(candidates.map(c => c.location).filter(l => l && l !== "N/A"))],
+                occupationStatuses: [...new Set(candidates.map(c => c.occupationStatus).filter(s => s && s !== "N/A"))],
+                ages: [...new Set(candidates.map(c => c.age).filter(a => a && a !== "N/A"))].sort((a, b) => a - b)
             });
         } catch (error) {
             console.error("Error loading filter options:", error);
@@ -228,7 +235,7 @@ const AdminDashboard = () => {
     const handleSearchChange = (e) => {
         const value = e.target.value;
         setSearchInput(value); // Update search input immediately for UI responsiveness
-        // The actual filter will be applied after debounce delay
+        // The actual filtering will be applied after debounce delay
     };
 
     const handleFilterChange = (e) => {
@@ -237,7 +244,6 @@ const AdminDashboard = () => {
             ...prev,
             [name]: value
         }));
-        setPagination(prev => ({ ...prev, currentPage: 1 }));
     };
 
     const clearFilters = () => {
@@ -245,11 +251,9 @@ const AdminDashboard = () => {
             qualification: "",
             location: "",
             occupationStatus: "",
-            age: "",
-            name: ""
+            age: ""
         });
-        setSearchInput(""); // Also clear the search input
-        setPagination(prev => ({ ...prev, currentPage: 1 }));
+        setSearchInput(""); // Clear the search input
         toast.success("Filters cleared");
     };
 
